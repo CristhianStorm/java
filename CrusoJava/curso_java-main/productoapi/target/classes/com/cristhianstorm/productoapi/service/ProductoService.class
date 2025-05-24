@@ -1,0 +1,63 @@
+// Source code is decompiled from a .class file using FernFlower decompiler.
+package com.cristhianstorm.productoapi.service;
+
+import com.cristhianstorm.productoapi.model.Producto;
+import com.cristhianstorm.productoapi.repository.ProductoRepository;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ProductoService {
+   @Autowired
+   private ProductoRepository repository;
+
+   public ProductoService() {
+   }
+
+   public List<Producto> listarTodos() {
+      return this.repository.findAll();
+   }
+
+   public Optional<Producto> obtenerPorId(Integer id) {
+      return this.repository.findById(id);
+   }
+
+   public Producto guardarProducto(Producto p) {
+      if (p.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+         throw new IllegalArgumentException("El precio debe ser mayor a 0");
+      } else if (p.getStock() < 0) {
+         throw new IllegalArgumentException("La cantidad no puede ser negativa");
+      } else {
+         p.setEstado(p.getStock() > 0 ? "Disponible" : "Agotado");
+         return (Producto)this.repository.save(p);
+      }
+   }
+
+   public Producto actualizarProducto(Integer id, Producto p) {
+      Optional<Producto> existente = this.repository.findById(id);
+      if (existente.isEmpty()) {
+         throw new IllegalArgumentException("No se encontró el producto con el código " + String.valueOf(id));
+      } else {
+         Producto prod = (Producto)existente.get();
+         if (p.getPrecio().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("El precio debe ser mayor a 0");
+         } else if (p.getStock() < 0) {
+            throw new IllegalArgumentException("La cantidad no puede ser negativa");
+         } else {
+            prod.setNombre(p.getNombre());
+            prod.setDescripcion(p.getDescripcion());
+            prod.setStock(p.getStock());
+            prod.setPrecio(p.getPrecio());
+            prod.setEstado(p.getStock() > 0 ? "Disponible" : "Agotado");
+            return (Producto)this.repository.save(prod);
+         }
+      }
+   }
+
+   public void eliminarProducto(Integer id) {
+      this.repository.deleteById(id);
+   }
+}
