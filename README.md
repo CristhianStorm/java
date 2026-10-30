@@ -70,4 +70,3 @@ No se ejecutó la aplicación durante esta revisión de documentación. Para val
 ---
 
 [CS // Software Lab · Cristhian Storm](https://github.com/CristhianStorm)
-
